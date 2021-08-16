@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title></title>
+	<script type="text/javascript">
+		var x_map=[];
+		var y_map=[];
+		var cloud_count=0;
+		var Ninja=new Image();
+		var cloud_model=new Image();
+		var canvas;
+		var Ninja_x=20;
+		var Ninja_y=400;
+		var ctx;
+		var barrier=new Image();
+		var z=new Image();
+		var boss=new Image();
+		var z_check=0;
+		var z_x=100;
+		var z_y=400;
+		var boss_dam=[];
+		var enemy_attack_check=0;
+		var jump_check=0;
+		var boss_x=1150;
+		var boss_y=400;
+		var boss_damge=0;
+		var boss_attack_image=new Image();
+		var hammer=new Image();
+		var hammer_check=0;
+		var hammer_x=0;
+		var hammer_y=0;
+		function draw()
+		{
+			ctx.drawImage(Ninja,Ninja_x,Ninja_y);
+			
+			if(z_check==1) ctx.drawImage(z,z_x,z_y);
+			if(barrier_check==1) ctx.drawImage(barrier,250,400);
+			ctx.drawImage(boss,boss_x,boss_y);
+			for(var i=0;i<4;i++)
+			{
+				ctx.drawImage(cloud_model,x_map[i],y_map[i]);
+			}
+			if(enemy_attack_check==1) ctx.drawImage(boss_attack_image,enemy_x,enemy_y);
+			if(hammer_check==1) ctx.drawImage(hammer,hammer_x,hammer_y);
+			ctx.beginPath();
+			ctx.rect(1000, 300, 480-boss_damge*0.01, 30);
+			ctx.fillStyle="red";
+			ctx.fill();
+			ctx.closePath();
+		}
+		function skill_check()
+		{
+			if(z_check==1)
+			{
+				if(z_x>=1000)
+				{
+					z_check=0;
+					z_x=-100;
+					z_y=getRandomInt(400,450);
+					boss_damge++;
+				}
+				z_x+=200;
+			}
+			if(jump_check>0)
+			{
+				if(jump_check==1)
+				{
+					if(Ninja_y==100) jump_check=2;
+					else Ninja_y-=50;
+				}
+				if(jump_check==2)
+				{
+					if(Ninja_y==400) jump_check=0;
+					else Ninja_y+=50;
+				}
+			}
+		}
+		var enemy_attack_s=0;
+		function enemy_attack()
+		{
+			if(enemy_attack_check==0)
+			{
+				
+				enemy_attack_check=1;
+				enemy_attack_s=getRandomInt(0,60);
+			}
+		}
+		var enemy_x=1000;
+		var enemy_y=450;
+		function enemy_attack_z()
+		{
+			if(enemy_x<=500 && barrier_check==1)
+			{
+				enemy_attack_check=0;
+				enemy_x=1000;
+				enemy_y=getRandomInt(400,450);
+			}
+			else if(enemy_x<=0)
+			{
+				enemy_attack_check=0;
+				enemy_x=1000;
+				enemy_y=getRandomInt(400,450);
+				alert('you Lose');
+				document.write('다시 시작하시려면 f5를 누르세요.');
+
+			}
+			enemy_x-=(10+enemy_attack_s);
+		}
+		function hammer_function()
+		{
+			if(hammer_x==1080)
+			{
+				hammer_check=0;
+				hammer_x=0;
+				hammer_y=0;
+				boss_damge+=1000;
+				return ;
+			}
+			hammer_x+=360;
+			hammer_y+=100;
+		}
+		function head()
+		{
+			if(480-boss_damge*0.01<=0) 
+			{
+				alert('you Win');
+				document.write('다시 시작하시려면 f5를 누르세요.');
+				boss_damge=-1;
+			}
+			ctx.clearRect(0,0,1500,700);
+			cloud();
+			enemy_attack();
+			if(enemy_attack_check==1) enemy_attack_z();
+			if(hammer_check==1) hammer_function();
+			skill_check();
+			draw();
+		}
+		function cloud()
+		{
+			for(var i=0;i<4;i++)
+			{
+				x_map[i]-=10;
+			}	
+			if(x_map[0]==-150)
+			{
+				x_map.shift();
+				y_map.shift();
+				cloud_count--;
+			}
+			if(cloud_count<4)
+			{
+				x_map.push(1500);
+				y_map.push(getRandomInt(0,30));
+				//ctx.drawImage(cloud_model,700,getRandomInt(0,30));
+				cloud_count++;
+			}
+						
+		}
+		function init()
+		{
+			Ninja.src='https://i.ibb.co/sHtNnMf/image.png';
+			cloud_model.src='https://i.ibb.co/rcRDKkc/image.png';
+			z.src='https://i.ibb.co/YdHStR4/image.png';
+			boss.src='https://i.ibb.co/L1mTknC/download.jpg';
+			boss_attack_image.src='https://i.ibb.co/VS4p7sG/image.png';
+			barrier.src='https://i.ibb.co/yFRHJf5/image.png';
+			hammer.src='https://i.ibb.co/kHj2ZC7/image.png';
+			canvas=document.getElementById('tutorial');
+			ctx=canvas.getContext('2d');
+
+			x_map.push(100);
+			y_map.push(getRandomInt(0,50));
+			x_map.push(400);
+			y_map.push(getRandomInt(0,50));
+			x_map.push(900);
+			y_map.push(getRandomInt(0,50));
+			x_map.push(1200);
+			y_map.push(getRandomInt(0,50));
+
+			cloud_count=4;
+			setInterval(head,50);
+
+		}
+
+		function getRandomInt(min, max) {
+		  min = Math.ceil(min);
+		  max = Math.floor(max);
+		  return Math.floor(Math.random() * (max - min)) + min; 
+		}
+		var barrier_check=0;
+		window.addEventListener( 'keydown', function(e) {
+			const a=e.keyCode;
+			console.log(a);
+			if(a==90 && jump_check==0)
+				z_check=1;
+			else if(a==32)
+				jump_check=1;
+			else if(a==87)
+				barrier_check=1;
+			else if(a==81)
+				hammer_check=1;
+		     
+		 });
+		window.addEventListener( 'keyup', function(e) {
+			const a=e.keyCode;
+			console.log(a);
+			if(a==87) barrier_check=0;
+		     
+		 });
+
+	</script>
+	<style type="text/css">
+		
+		canvas 
+		{
+			border: 1px solid black; 
+			position:absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			margin: auto;
+		}
+	</style>
+</head>
+<body onload="init();">
+	<canvas id="tutorial" width="1500" height="700"></canvas>
+</body>
+</html>
