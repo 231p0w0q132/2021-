@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript">
+		var canvas;
+		var turn=1;
+		var arr=new Array(16);
+		function init() {
+			
+			for(var i=0;i<15;i++)
+				arr[i]=new Array(16);
+			for(var i=0;i<15;i++)
+				for(var j=0;j<15;j++) 
+					arr[i][j]=0;
+				canvas=document.getElementById('myCanvas');
+				canvas.addEventListener("click",function(event){
+				var rect = canvas.getBoundingClientRect();
+        		var x = event.clientX - rect.left;
+        		var y = event.clientY - rect.top;
+        		for(var i=0;i<15;i++)
+        		{
+        			for(var j=0;j<15;j++)
+        			{
+        				if(185+i*45<=x && 45*j+45<=y && x<195+i*45 && y<55+j*45 
+        					&& arr[i][j]==0)
+		        		{
+		        			arr[i][j]=turn;
+		        			if(turn==1) turn=2;
+		        			else turn=1;
+		        			var ctx=canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+		        			draw_pan();
+		        			if(check_game(i,j,arr[i][j]))
+		        			{
+		        				if(arr[i][j]==1) alert('흑 승!');
+		        				else alert('백 승');
+		        				for(var i=0;i<15;i++)
+									for(var j=0;j<15;j++) 
+										arr[i][j]=0;
+								turn=1;
+								alert('다시 하려면 f5를 누르세요');
+		        			}
+		        		}
+        			}
+        		}
+        		
+				
+			});
+			draw_pan();
+		}
+		function check_game(x,y,v){
+			var check_di=1;
+			for(var i=1;i<=4;i++)
+			{
+				if(arr[x-i][y-i]==v)
+				{
+					check_di++;
+				}
+				else break;
+			}
+			for(var i=1;i<=4;i++)
+			{
+				if(arr[x+i][y+i]==v)
+				{
+					check_di++;
+				}
+				else break;
+			}
+			//alert(check_di);
+			if(check_di>=5) return 1;
+			check_di=1;
+			for(var i=1;i<=4;i++)
+			{
+				if(arr[x+i][y-i]==v)
+				{
+					check_di++;
+				}
+				else break;
+			}
+			for(var i=1;i<=4;i++)
+			{
+				if(arr[x-i][y+i]==v)
+				{
+					check_di++;
+				}
+				else break;
+			}
+			if(check_di>=5) return 1;
+			check_di=1;
+			for(var i=1;i<=4;i++)
+			{
+				if(arr[x+i][y]==v)
+				{
+					check_di++;
+				}
+				else break;
+			}
+			for(var i=1;i<=4;i++)
+			{
+				if(arr[x-i][y]==v)
+				{
+					check_di++;
+				}
+				else break;
+			}
+			if(check_di>=5) return 1;
+			check_di=1;
+			for(var i=1;i<=4;i++)
+			{
+				if(arr[x][y-i]==v)
+				{
+					check_di++;
+				}
+				else break;
+			}
+			for(var i=1;i<=4;i++)
+			{
+				if(arr[x][y+i]==v)
+				{
+					check_di++;
+				}
+				else break;
+			}
+			if(check_di>=5) return 1;
+			return 0;
+		}
+		function draw_pan(){
+			
+			var ctx=canvas.getContext("2d");
+
+			ctx.fillStyle='#F4A460';
+			ctx.fillRect(100,0,820,700);
+
+			ctx.beginPath();
+			for(var i=0;i<15;i++)
+			{
+				ctx.moveTo(190,50+i*45);
+				ctx.lineTo(820,50+i*45);
+				ctx.moveTo(190+i*45,50);
+				ctx.lineTo(190+i*45,680);
+			}
+			ctx.lineWidth=5;
+			ctx.strokeStyle='black';
+			ctx.stroke();
+			ctx.closePath();
+			
+			
+			
+			// 점 4개
+			ctx=canvas.getContext("2d");
+			ctx.beginPath();
+			ctx.arc(190+45*3,3*45+50,7,0,Math.PI*2,false);
+
+			ctx.fillStyle="black";
+			ctx.fill();
+			ctx.closePath();
+
+			ctx=canvas.getContext("2d");
+			ctx.beginPath();
+			ctx.arc(190+45*11,3*45+50,7,0,Math.PI*2,false);
+			ctx.fillStyle="black";
+			ctx.fill();
+			ctx.closePath();
+
+			ctx=canvas.getContext("2d");
+			ctx.beginPath();
+			ctx.arc(190+45*11,11*45+50,7,0,Math.PI*2,false);
+			ctx.fillStyle="black";
+			ctx.fill();
+			ctx.closePath();
+
+			ctx=canvas.getContext("2d");
+			ctx.beginPath();
+			ctx.arc(190+45*3,11*45+50,7,0,Math.PI*2,false);
+			ctx.fillStyle="black";
+			ctx.fill();
+			ctx.closePath();
+
+			ctx=canvas.getContext("2d");
+			ctx.beginPath();
+			ctx.arc(190+45*7,7*45+50,7,0,Math.PI*2,false);
+			ctx.fillStyle="black";
+			ctx.fill();
+			ctx.closePath();
+			
+			for(var i=0;i<15;i++)
+			{
+				for(var j=0;j<15;j++)
+				{
+					if(arr[i][j]==1)
+					{
+						
+						ctx.beginPath();
+						ctx.arc(190+i*45,45*j+50,13,0,Math.PI*2,false);
+						ctx.fillStyle="black";
+						ctx.fill();
+						ctx.closePath();
+					}
+					else if(arr[i][j]==2)
+					{
+						ctx.beginPath();
+						ctx.arc(190+i*45,45*j+50,13,0,Math.PI*2,false);
+						ctx.fillStyle="white";
+						ctx.fill();
+						ctx.closePath();
+					}
+					
+				}
+			}
+			
+		}
+	</script>
+	<style type="text/css">
+		
+		canvas 
+		{
+			border: 1px solid black; 
+			position:absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			margin: auto;
+		}
+	</style>
+</head>
+<body>
+
+<body onload="init();">
+	<canvas id="myCanvas" width="1024" height="700"></canvas>
+
+</body>
+</html>
